@@ -1,0 +1,105 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta HTTP-EQUIV="pragma" CONTENT="no-cache">
+    <title>僵硬车联网</title>
+    <link href="./stylesheets/setting.css" rel="stylesheet" type="text/css" />
+    <link href="./stylesheets/switch.css" rel="stylesheet" type="text/css" />
+    <link href="./stylesheets/navi.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.1.0/css/bootstrap.min.css">
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/popper.js/1.12.5/umd/popper.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="./javascripts/index.js"></script>
+
+
+
+</head>
+
+<body>
+
+<div id="left_body">
+
+    <div class="home"></div>
+
+    <div id="time">
+        <script>
+            //这里代码多了几行，但是不会延迟显示，速度比较好，格式可以自定义，是理想的时间显示
+            setInterval("getTime()",1000);
+
+        </script>
+    </div>
+
+    <div id="date">
+        <script>
+
+            setInterval("getDate()",3600000);
+
+
+        </script>
+    </div>
+    <div id="show_text3">
+        <!--
+        <script>
+            setInterval("coin()",1000);
+
+        </script>-->
+    </div>
+    <div id="voice">
+        <img src="./images/simayuyin.png">
+    </div>
+
+    <div class="testswitch">
+        <input class="testswitch-checkbox" id="onoffswitch" type="checkbox">
+        <label class="testswitch-label" for="onoffswitch">
+            <span class="testswitch-inner"></span>
+            <span class="testswitch-switch"></span>
+        </label>
+    </div>
+
+    <div id="show_text1">
+        共享数据
+    </div>
+
+    <button type="button" class="btn-secondary" id="cashing">兑换</button>
+
+    <div id="message">
+        <img src="./images/message.png">
+    </div>
+
+    <div id="show_text2">
+        ippcoin:
+    </div>
+
+
+</div>
+<div id="right_body" >
+
+    <div class="btn">
+        <input type="image" src="./images/maps.png "  name="img" />
+    </div>
+    <div id="biao1" >
+        <img src="./images/1.png">
+    </div>
+    <div id="biao2">
+        <img src="./images/2.png">
+    </div>
+    <div id="biao3">
+        <img src="./images/3.png">
+    </div>
+    <div id="biao4">
+        <img src="./images/4.png">
+    </div>
+
+
+</div>
+
+
+
+
+
+</body>
+
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>僵硬车联网</title>
+    <script src="./javascripts/init-map.js"></script>
+    <script src="./javascripts/getRoute.js"></script>
+
+</head>
+
+<body>
+
+    <div class="map" id="map">
+        <div id="container"></div>
+        <div class="search-bar">
+            <input id="location" placeholder="请输入目的地">
+
+            <div class="drop-down">
+
+                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" id="down-button" >
+                    选择更多地点
+                </button>
+                <div class="dropdown-menu" id="panel"></div>
+            </div>
+        </div>
+        <div class="navi-opt">
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <p>路径最短</p>
+                    <p id="routeTime"></p>
+                    <p id="routeLength"></p>
+                    <button type="button" class="btn btn-primary chooseBtn navi" id="navi-button1">开始导航</button>
+                </li>
+                <li class="list-group-item">
+                    <p>时间最短</p>
+                    <p id="timeTime"></p>
+                    <p id="timeLength"></p>
+                    <button type="button" class="btn btn-primary chooseBtn navi" id="navi-button2">开始导航</button>
+                </li>
+                <li class="list-group-item">
+                    <p>收费最少</p>
+                    <p id="feeTime"></p>
+                    <p id="feeLength"></p>
+                    <button type="button" class="btn btn-primary chooseBtn navi" id="navi-button3">开始导航</button>
+                </li>
+            </ul>
+
+
+        </div>
+
+
+
+
+    </div>
+
+
+
+</body>
+</html>

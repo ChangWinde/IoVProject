@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+</head>
+<body>
+    <div class="btn">
+        <input type="image" src="./images/maps.png "  name="img" />
+    </div>
+    <div id="biao1" >
+        <img src="./images/1.png">
+    </div>
+    <div id="biao2">
+        <img src="./images/2.png">
+    </div>
+    <div id="biao3">
+        <img src="./images/3.png">
+    </div>
+    <div id="biao4">
+        <img src="./images/4.png">
+    </div>
+
+    <script>
+        $(document).ready(function(){
+            $(".btn").click(function(){
+                $("#right_body").load("navigation.html");
+
+            });
+        });
+    </script>
+
+</body>
+</html>
