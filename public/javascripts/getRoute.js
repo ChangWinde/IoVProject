@@ -37,6 +37,10 @@ for (var i = 0;i<chooseBtns.length;i++){
         naviOpt.classList.remove('block');
     })
 }
+//发送数据到服务器
+function sendInfo(Info) {
+
+}
 
 
 

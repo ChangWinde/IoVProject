@@ -1,4 +1,4 @@
-
+var currentLocation;
 window.onLoad  = function(){
     var map = new AMap.Map('container');
     AMap.plugin(['AMap.Driving', 'AMap.Autocomplete', 'AMap.ToolBar', 'AMap.PlaceSearch', 'AMap.Geolocation'], function (){
@@ -46,48 +46,47 @@ window.onLoad  = function(){
             buttonPosition: 'RB'
         });
         map.addControl(geolocation);
-        geolocation.getCurrentPosition();
+        setInterval(geolocation.getCurrentPosition(function (status, result) {
+            currentLocation = result.position;
+        }), 1000);
+
+        if(typeof(AMapUI) == "undefined"){
+            $.getScript("//webapi.amap.com/ui/1.0/main.js?v=1.0.11").done(function (script, textstatus) {
+                if(textstatus == "success" && typeof(AMapUI) != undefined){
+                    AMapUI.loadUI(['misc/PoiPicker'], function(PoiPicker) {
+
+                        var poiPicker = new PoiPicker({
+                            //city:'北京',
+                            input: 'location',
 
 
-    });
+                        });
 
-
-    if(typeof(AMapUI) == "undefined"){
-        $.getScript("//webapi.amap.com/ui/1.0/main.js?v=1.0.11").done(function (script, textstatus) {
-            if(textstatus == "success" && typeof(AMapUI) != undefined){
-                AMapUI.loadUI(['misc/PoiPicker'], function(PoiPicker) {
-
-                    var poiPicker = new PoiPicker({
-                        //city:'北京',
-                        input: 'location',
-
-
+                        //初始化poiPicker
+                        poiPickerReady(poiPicker);
                     });
-
-                    //初始化poiPicker
-                    poiPickerReady(poiPicker);
-                });
-            } else {
-                console.log("loading failed");
-            }
-
-        });
-
-    } else {
-        AMapUI.loadUI(['misc/PoiPicker'], function(PoiPicker) {
-
-            var poiPicker = new PoiPicker({
-                //city:'北京',
-                input: 'location',
+                } else {
+                    console.log("loading failed");
+                }
 
             });
 
-            //初始化poiPicker
-            poiPickerReady(poiPicker);
-        });
+        } else {
+            AMapUI.loadUI(['misc/PoiPicker'], function(PoiPicker) {
 
-    }
+                var poiPicker = new PoiPicker({
+                    //city:'北京',
+                    input: 'location',
 
+                });
+
+                //初始化poiPicker
+                poiPickerReady(poiPicker);
+            });
+
+        }
+
+    });
 
 
     function poiPickerReady(poiPicker) {
@@ -102,13 +101,8 @@ window.onLoad  = function(){
 
         //选取了某个POI
         poiPicker.on('poiPicked', function(poiResult) {
-            var poi = poiResult.item,
-                info = {
-                    id: poi.id,
-                    name: poi.name,
-                    location: poi.location.toString(),
-                };
-            console.log(info)
+            var poi = poiResult.item;
+
 
             //设置地图上可视化显示点
             marker.setMap(map);
@@ -129,6 +123,10 @@ window.onLoad  = function(){
         });
 
     }
+
+
+
+
 
 }
 

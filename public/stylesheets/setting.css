@@ -9,9 +9,9 @@ body {
     position: absolute;
     left:0px;
     float: left;
-    width: 34.04%;
+    width: 34.24%;
     height: 100%;
-    background-color: #383d41;
+    background-color: #2B2B2B;
 
 }
 #right_body{
@@ -20,17 +20,17 @@ body {
     float: right;
     width: 65.70%;
     height: 100%;
-    border-left: 1px #FFFFFF solid;
-    background-color: #383d41;
+    border-left: 0.1px #FFFFFF solid;
+    background-color: #2B2B2B;
 
 }
 
 #time{
     position: absolute;
-    top:40.3%;
+    top:39.3%;
     right:5%;
     color: #FFF;
-    font-size:4.7em;
+    font-size:3.5em;
 }
 
 #date{
@@ -59,14 +59,14 @@ body {
      top:53.3%;
      right:23%;
      color: #FFF;
-     font-size:1.4em;
+     font-size:1.0em;
  }
 #show_text2{
     position: absolute;
     top:58.1%;
     right:26%;
     color: #FFF;
-    font-size:1.4em;
+    font-size:1.0em;
 }
 #show_text3{
     position: absolute;
