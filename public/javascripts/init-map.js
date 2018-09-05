@@ -1,10 +1,17 @@
 var currentLocation;
+var driving;
 window.onLoad  = function(){
     var map = new AMap.Map('container');
     AMap.plugin(['AMap.Driving', 'AMap.Autocomplete', 'AMap.ToolBar', 'AMap.PlaceSearch', 'AMap.Geolocation'], function (){
         //初始化toolBar
         var toolbar = new AMap.ToolBar();
         map.addControl(toolbar);
+        //初始化路径规划
+        driving = new AMap.Driving({
+            policy: AMap.DrivingPolicy.LEAST_DISTANCE,
+            autoFitView: true
+
+        });
         //初始化自动提示
         // var autoOptions = {
         //     input:"location"
@@ -86,6 +93,8 @@ window.onLoad  = function(){
 
         }
 
+        
+
     });
 
 
@@ -113,19 +122,131 @@ window.onLoad  = function(){
             infoWindow.open(map, marker.getPosition());
             infoWindow.setContent(poi.name);
             map.setCenter(poi.location);
+            //查询路径规划方案
+            var distanceRouteCoordinate, timeRouteCoordinate, feeRouteCoordinate, trafficRouteCoordinate = [];
+            var time, distance, fee, traffic;
+            var timeInfo, distanceInfo, feeInfo, trafficInfo;
+            distance = searchByPolicy(driving, AMap.DrivingPolicy.LEAST_DISTANCE);
+            time = searchByPolicy(driving, AMap.DrivingPolicy.LEAST_TIME);
+            fee = searchByPolicy(driving, AMap.DrivingPolicy.LEAST_FEE);
+            traffic = searchByPolicy(driving. AMap.DrivingPolicy.REAL_TRAFFIC);
+
+            distanceRouteCoordinate = distance.coordians;
+            timeRouteCoordinate = time.coordians;
+            feeRouteCoordinate = fee.coordians;
+            trafficRouteCoordinate = traffic.coordians;
+
+            timeInfo = {
+                time : time.time,
+                length: time.distance
+            };
+
+            distanceInfo = {
+                time: distance.time,
+                length: distance.distance
+            };
+
+            feeInfo = {
+                time: fee.time,
+                length: fee.distance
+            };
+
+            trafficInfo = {
+                time: traffic.time,
+                length: traffic.distance
+            }
+
+
+
+
+            var routes = {
+                distance: distanceRouteCoordinate,
+                time: timeRouteCoordinate,
+                fee: feeRouteCoordinate,
+                traffic: trafficRouteCoordinate
+            }
+
+
 
             //TODO 使用ajax向服务器发送数据，成功接收后产生导航信息标签
-            var naviOpt = document.getElementsByClassName('navi-opt')[0];
-            naviOpt.classList.add('block');
+            //ajax发送数据
+            $.ajax({
+                type: 'GET',
+                url: "/processNavi",
+                data: routes,
+                success: function (data, textStatus) {
+                    var length = document.getElementById("routeLength");
+                    var time = document.getElementById("routeTime");
+                    if(data == "distance"){
+                        length.innerHTML = distanceInfo.length;
+                        time.innerHTML = distanceInfo.time;
+
+                    }else if (data == "time"){
+                        length.innerHTML = timeInfo.length;
+                        time.innerHTML = timeInfo.time;
+
+                    } else if(data == "traffic"){
+                        length.innerHTML = trafficInfo.length;
+                        time.innerHTML = trafficInfo.time;
+
+                    }else {
+                        length.innerHTML = feeInfo.length;
+                        time.innerHTML = feeInfo.time
+
+                    }
+                    //产生导航栏标签
+                    var naviOpt = document.getElementsByClassName('navi-opt')[0];
+                    naviOpt.classList.add('block');
+                },
+                error: function (data, textStatus) {
+                    alert("生成路径失败")
+                    
+                },
+                dataType: String
+            });
+
+
 
 
             //map.setCenter(marker.getPosition());
         });
 
+
+
+
+
     }
 
+    function searchByPolicy(driving, policy) {
+        var coordians = [];
+        var distance, time;
+        driving.setPolicy(policy);
+        driving.search(currentLocation, poi.location, {}, function (status, result) {
+            var routes = result.routes;
+            var steps = routes[0].steps;
+            distance = routes.distance;
+            time = routes.time;
 
+            for (var i = 0; i < steps.length; i++){
+                var routeInfo = {
+                    startLocation: steps[i].start_location,
+                    endLocation: steps[i].end_location
+                }
 
+                coordians[i] = routeInfo;
+
+            }
+
+        });
+
+        var info = {
+            distance: distance,
+            time: time,
+            coordians: coordians
+        };
+        return info;
+
+    }
 
 
 }
