@@ -1,45 +1,18 @@
 var currentLocation;
-var driving;
-window.onLoad  = function(){
+
+//初始化地图
+window.onLoad  = function() {
+    console.log("initial map");
     var map = new AMap.Map('container');
-    AMap.plugin(['AMap.Driving', 'AMap.Autocomplete', 'AMap.ToolBar', 'AMap.PlaceSearch', 'AMap.Geolocation'], function (){
-        //初始化toolBar
+    //加载toolBar
+    AMap.plugin('AMap.ToolBar', function () {
+        console.log("tool bar");
         var toolbar = new AMap.ToolBar();
         map.addControl(toolbar);
-        //初始化路径规划
-        driving = new AMap.Driving({
-            policy: AMap.DrivingPolicy.LEAST_DISTANCE,
-            autoFitView: true
+    });
 
-        });
-        //初始化自动提示
-        // var autoOptions = {
-        //     input:"location"
-        // };
-        // console.log(10086)
-        // var auto = new AMap.Autocomplete(autoOptions);
-        // var placeSearch = new AMap.PlaceSearch({
-        //     map: map,
-        //     pageSize:8,
-        //     panel:"panel",
-        //     autoFitView: true
-        // });
-        // //地点查询初始化
-        // AMap.event.addListener(auto, "select", select);//注册监听
-        //
-        // function select(e) {
-        //     placeSearch.setCity(e.poi.adcode);
-        //     placeSearch.search(e.poi.name);
-        //     var endInfo = {
-        //         name: e.poi.name,
-        //         location: e.poi.location.toString()
-        //     }
-        //     console.log(endInfo)
-        //
-        //
-        // }
-
-        //初始化当前定位
+    //加载定位
+    AMap.plugin('AMap.Geolocation', function () {
         var geolocation = new AMap.Geolocation({
             // 是否使用高精度定位，默认：true
             enableHighAccuracy: true,
@@ -53,213 +26,374 @@ window.onLoad  = function(){
             buttonPosition: 'RB'
         });
         map.addControl(geolocation);
-        setInterval(geolocation.getCurrentPosition(function (status, result) {
+        geolocation.getCurrentPosition(function (status, result) {
             currentLocation = result.position;
-        }), 1000);
+            console.log(currentLocation);
+        });
+    });
 
-        if(typeof(AMapUI) == "undefined"){
-            $.getScript("//webapi.amap.com/ui/1.0/main.js?v=1.0.11").done(function (script, textstatus) {
-                if(textstatus == "success" && typeof(AMapUI) != undefined){
-                    AMapUI.loadUI(['misc/PoiPicker'], function(PoiPicker) {
+    //加载自动推荐目的地
+    AMap.plugin(['AMap.Autocomplete', 'AMap.PlaceSearch', 'AMap.Driving'], function () {
+        var EndPoint;
+        var autoOptions = {
+            input:"location"
+        };
+        var auto = new AMap.Autocomplete(autoOptions);
+        var placeSearch = new AMap.PlaceSearch({
+            map: map,
+            pageSize:8,
+            panel:"panel",
+            autoFitView: true
+        });
+        //地点查询初始化
+        AMap.event.addListener(auto, "select", select);//注册监听
 
-                        var poiPicker = new PoiPicker({
-                            //city:'北京',
-                            input: 'location',
-
-
-                        });
-
-                        //初始化poiPicker
-                        poiPickerReady(poiPicker);
-                    });
-                } else {
-                    console.log("loading failed");
-                }
-
-            });
-
-        } else {
-            AMapUI.loadUI(['misc/PoiPicker'], function(PoiPicker) {
-
-                var poiPicker = new PoiPicker({
-                    //city:'北京',
-                    input: 'location',
-
-                });
-
-                //初始化poiPicker
-                poiPickerReady(poiPicker);
-            });
+        function select(e) {
+            placeSearch.setCity(e.poi.adcode);
+            placeSearch.search(e.poi.name);
 
         }
 
-        
+        //当选择poi时，获取其终点经纬度
+        AMap.event.addListener(placeSearch, "listElementClick", getEndPoint);
+        AMap.event.addListener(placeSearch, "markerClick", getEndPoint);
 
-    });
+        function getEndPoint(selectChangeEvent) {
+            console.log(55555)
+            EndPoint = selectChangeEvent.data.location;
+            console.log(EndPoint);
+            map.emit("hadEndPoint",{endPoint: EndPoint});
+            console.log("triggered")
 
+        }
+        //绑定一旦修改endPoint就执行路径规划的事件
+        map.on("hadEndPoint", startPlanning);
 
-    function poiPickerReady(poiPicker) {
+        function startPlanning(e){
+            console.log("startplanning")
+            //获得高德路径规划方案
+            //创建四种规划方案
+            var leastDistanceDriving = new AMap.Driving({
+                policy: AMap.DrivingPolicy.LEAST_DISTANCE,
+                map: map,
+                showTraffic: true,
+                autoFitView: true
+            });
+            var leastTimeDriving = new AMap.Driving({
+                policy: AMap.DrivingPolicy.LEAST_TIME,
+                map: map,
+                showTraffic: true,
+                autoFitView: true
+            });
+            var leastFeeDriving = new AMap.Driving({
+                policy: AMap.DrivingPolicy.LEAST_FEE,
+                map: map,
+                showTraffic: true,
+                autoFitView: true
+            });
+            var leastTrafficDriving = new AMap.Driving({
+                policy: AMap.DrivingPolicy.REAL_TRAFFIC,
+                map: map,
+                showTraffic: true,
+                autoFitView: true
+            });
+            //获得四种规划方案
+            currentLocation = new AMap.LngLat(118.8208293915, 31.9314407620);
+            var leastDistancePlan, leastTimePlan, leastFeePlan, trafficPlan;
+            var drivings = [leastDistanceDriving, leastTimeDriving, leastFeeDriving, leastTrafficDriving];
+            var routeSteps = []
+//TODO 当前有一个同步问题未解决
+            new Promise(function (resolve, reject) {
+                var promises = [];
+                //对每个driving创建promise
+                for (var i = 0; i < drivings.length; i++){
+                    promises[i] = new Promise(function (resolve, reject) {
+                        drivings[i].search(currentLocation, EndPoint, {}, function (status, result) {
+                            if (status == "complete"){
+                                resolve(result);
+                            }else {
+                                reject(result);
+                            }
 
-        window.poiPicker = poiPicker;
-
-        var marker = new AMap.Marker();
-
-        var infoWindow = new AMap.InfoWindow({
-            offset: new AMap.Pixel(0, -20)
-        });
-
-        //选取了某个POI
-        poiPicker.on('poiPicked', function(poiResult) {
-            var poi = poiResult.item;
-
-
-            //设置地图上可视化显示点
-            marker.setMap(map);
-            infoWindow.setMap(map);
-
-            marker.setPosition(poi.location);
-            infoWindow.setPosition(poi.location);
-            infoWindow.open(map, marker.getPosition());
-            infoWindow.setContent(poi.name);
-            map.setCenter(poi.location);
-            //查询路径规划方案
-            var distanceRouteCoordinate, timeRouteCoordinate, feeRouteCoordinate, trafficRouteCoordinate = [];
-            var time, distance, fee, traffic;
-            var timeInfo, distanceInfo, feeInfo, trafficInfo;
-            distance = searchByPolicy(driving, AMap.DrivingPolicy.LEAST_DISTANCE);
-            time = searchByPolicy(driving, AMap.DrivingPolicy.LEAST_TIME);
-            fee = searchByPolicy(driving, AMap.DrivingPolicy.LEAST_FEE);
-            traffic = searchByPolicy(driving. AMap.DrivingPolicy.REAL_TRAFFIC);
-
-            distanceRouteCoordinate = distance.coordians;
-            timeRouteCoordinate = time.coordians;
-            feeRouteCoordinate = fee.coordians;
-            trafficRouteCoordinate = traffic.coordians;
-
-            timeInfo = {
-                time : time.time,
-                length: time.distance
-            };
-
-            distanceInfo = {
-                time: distance.time,
-                length: distance.distance
-            };
-
-            feeInfo = {
-                time: fee.time,
-                length: fee.distance
-            };
-
-            trafficInfo = {
-                time: traffic.time,
-                length: traffic.distance
-            }
-
-
-
-
-            var routes = {
-                distance: distanceRouteCoordinate,
-                time: timeRouteCoordinate,
-                fee: feeRouteCoordinate,
-                traffic: trafficRouteCoordinate
-            }
+                        })
+                    }).then(function (result) {
+                        //取出信息
+                        var steps = result.routes[0].steps;
+                        var routeInfo = [];
+                        for (var j = 0; j < steps.length; j++){
+                            routeInfo[j] = steps[j].path;
+                        }
+                        routeSteps[i] = routeInfo;
 
 
 
-            //TODO 使用ajax向服务器发送数据，成功接收后产生导航信息标签
-            //ajax发送数据
-            $.ajax({
-                type: 'GET',
-                url: "http://localhost:3000/processNavi",
-                data: routes,
-                success: function (data, textStatus) {
-                    var length = document.getElementById("routeLength");
-                    var time = document.getElementById("routeTime");
-                    if(data == "distance"){
-                        length.innerHTML = distanceInfo.length;
-                        time.innerHTML = distanceInfo.time;
+                    }).catch(function (reason) {
+                        reject(reason);
+                    })
 
-                    }else if (data == "time"){
-                        length.innerHTML = timeInfo.length;
-                        time.innerHTML = timeInfo.time;
+                    setTimeout(resolve(routeSteps), 10000)
 
-                    } else if(data == "traffic"){
-                        length.innerHTML = trafficInfo.length;
-                        time.innerHTML = trafficInfo.time;
+                }
+                console.log(routeSteps);
 
-                    }else {
-                        length.innerHTML = feeInfo.length;
-                        time.innerHTML = feeInfo.time
+                //获得到数据后
+            }).then(function (result) {
+                //向服务器发送数据
+                console.log(result);
+            }).catch(function (reason) {
+                console.log(reason);
 
-                    }
-                    //TODO 导航预览
-
-                    //产生导航栏标签
-                    var naviOpt = document.getElementsByClassName('navi-opt')[0];
-                    naviOpt.classList.add('block');
-
-                    //TODO 点击开始导航按钮后开始导航
-                },
-                error: function (data, textStatus) {
-                    alert("生成路径失败")
-                    
-                },
-                dataType: String
             });
 
 
 
 
-            //map.setCenter(marker.getPosition());
-        });
-
-
-
-
-
-    }
-
-    function searchByPolicy(driving, policy) {
-        var coordians = [];
-        var distance, time;
-        driving.setPolicy(policy);
-        driving.search(currentLocation, poi.location, {}, function (status, result) {
-            var routes = result.routes;
-            var steps = routes[0].steps;
-            distance = routes.distance;
-            time = routes.time;
-
-            for (var i = 0; i < steps.length; i++){
-                var routeInfo = {
-                    startLocation: steps[i].start_location,
-                    endLocation: steps[i].end_location
-                }
-
-                coordians[i] = routeInfo;
+            function getPlans(drivings, plans){
 
             }
+            // leastDistanceDriving.search(currentLocation, EndPoint, {}, function (status, result) {
+            //     if (status == "complete")
+            //     {
+            //         leastDistancePlan = result;
+            //     }else {
+            //         console.log(result);
+            //     }
+            //
+            // });
+            // leastTimeDriving.search(currentLocation, EndPoint, {}, function (status, result) {
+            //     if (status == "complete")
+            //     {
+            //         leastTimePlan = result;
+            //     }else {
+            //         console.log(result);
+            //     }
+            //
+            // });
+            // leastFeeDriving.search(currentLocation, EndPoint, {}, function (status, result) {
+            //     if (status == "complete")
+            //     {
+            //         leastFeePlan = result;
+            //     }else {
+            //         console.log(result);
+            //     }
+            //
+            // });
+            // leastTrafficDriving.search(currentLocation, EndPoint, {}, function (status, result) {
+            //     if (status == "complete")
+            //     {
+            //         console.log(88888)
+            //         trafficPlan = result;
+            //     }else {
+            //         console.log(result);
+            //     }
+            //
+            // });
 
-        });
-
-        var info = {
-            distance: distance,
-            time: time,
-            coordians: coordians
-        };
-        return info;
-
-    }
 
 
-}
 
+
+        }
+        console.log(1)
+
+
+
+    });
+
+};
 var url = 'https://webapi.amap.com/maps?v=1.4.8&key=0142d51b5476a32bd279128da1e42122&callback=onLoad';
 var jsapi = document.createElement('script');
 jsapi.charset = 'utf-8';
 jsapi.src = url;
 document.head.appendChild(jsapi);
+
+
+
+// AMap.plugin([ 'AMap.Autocomplete', 'AMap.ToolBar', 'AMap.PlaceSearch', 'AMap.Geolocation'], function (){
+//     //初始化toolBar
+//     var toolbar = new AMap.ToolBar();
+//     map.addControl(toolbar);
+//     //初始化路径规划
+//
+//     //初始化当前定位
+
+//
+
+//
+//
+//     function poiPickerReady(poiPicker, driving) {
+//
+//         window.poiPicker = poiPicker;
+//
+//         var marker = new AMap.Marker();
+//
+//         var infoWindow = new AMap.InfoWindow({
+//             offset: new AMap.Pixel(0, -20)
+//         });
+//
+//         //选取了某个POI
+//         poiPicker.on('poiPicked', function(poiResult) {
+//             var poi = poiResult.item;
+//
+//
+//             //设置地图上可视化显示点
+//             marker.setMap(map);
+//             infoWindow.setMap(map);
+//
+//             marker.setPosition(poi.location);
+//             infoWindow.setPosition(poi.location);
+//             infoWindow.open(map, marker.getPosition());
+//             infoWindow.setContent(poi.name);
+//             map.setCenter(poi.location);
+//             //查询路径规划方案
+//             var distanceRouteCoordinate, timeRouteCoordinate, feeRouteCoordinate, trafficRouteCoordinate = [];
+//             var time, distance, fee, traffic;
+//             var timeInfo, distanceInfo, feeInfo, trafficInfo;
+//             var leastTime = 1;
+//             distance = searchByPolicy(leastTime ,poi);
+//             // time = searchByPolicy(AMap.DrivingPolicy.LEAST_TIME, poi);
+//             // fee = searchByPolicy(AMap.DrivingPolicy.LEAST_FEE, poi);
+//             //traffic = searchByPolicy(driving. AMap.DrivingPolicy.REAL_TRAFFIC, poi);
+//             console.log(distance);
+//             distanceRouteCoordinate = distance.coordians;
+//             timeRouteCoordinate = time.coordians;
+//             feeRouteCoordinate = fee.coordians;
+//             trafficRouteCoordinate = traffic.coordians;
+//
+//             timeInfo = {
+//                 time : time.time,
+//                 length: time.distance
+//             };
+//
+//             distanceInfo = {
+//                 time: distance.time,
+//                 length: distance.distance
+//             };
+//
+//             feeInfo = {
+//                 time: fee.time,
+//                 length: fee.distance
+//             };
+//
+//             trafficInfo = {
+//                 time: traffic.time,
+//                 length: traffic.distance
+//             }
+//
+//
+//
+//
+//             var routes = {
+//                 distance: distanceRouteCoordinate,
+//                 time: timeRouteCoordinate,
+//                 fee: feeRouteCoordinate,
+//                 traffic: trafficRouteCoordinate
+//             }
+//
+//
+//
+//             //TODO 使用ajax向服务器发送数据，成功接收后产生导航信息标签
+//             //ajax发送数据
+//             $.ajax({
+//                 type: 'GET',
+//                 url: "http://localhost:3000/processNavi",
+//                 data: routes,
+//                 success: function (data, textStatus) {
+//                     var length = document.getElementById("routeLength");
+//                     var time = document.getElementById("routeTime");
+//                     if(data == "distance"){
+//                         length.innerHTML = distanceInfo.length;
+//                         time.innerHTML = distanceInfo.time;
+//
+//                     }else if (data == "time"){
+//                         length.innerHTML = timeInfo.length;
+//                         time.innerHTML = timeInfo.time;
+//
+//                     } else if(data == "traffic"){
+//                         length.innerHTML = trafficInfo.length;
+//                         time.innerHTML = trafficInfo.time;
+//
+//                     }else {
+//                         length.innerHTML = feeInfo.length;
+//                         time.innerHTML = feeInfo.time
+//
+//                     }
+//                     //TODO 导航预览
+//
+//                     //产生导航栏标签
+//                     var naviOpt = document.getElementsByClassName('navi-opt')[0];
+//                     naviOpt.classList.add('block');
+//
+//                     //TODO 点击开始导航按钮后开始导航
+//                 },
+//                 error: function (data, textStatus) {
+//                     alert("生成路径失败")
+//
+//                 },
+//                 dataType: String
+//             });
+//
+//
+//
+//
+//             //map.setCenter(marker.getPosition());
+//         });
+//
+//
+//
+//
+//
+//
+//     }
+//
+//     function searchByPolicy(policy, poi) {
+//         currentLocation = new AMap.LngLat(31.9314407620, 118.8208293915);
+//         var driving;
+//         AMap.plugin('AMap.Driving', function () {
+//             driving = new AMap.Driving({
+//                 policy: AMap.DrivingPolicy.LEAST_TIME,
+//                 autoFitView: true
+//             });
+//             console.log(driving);
+//             var coordians, paths = [];
+//             var distance, time;
+//             driving.search(currentLocation, poi.location, {}, function (status, result) {
+//                 console.log(status)
+//                 console.log(result)
+//                 var routes = result.routes;
+//                 var steps = routes[0].steps;
+//                 distance = routes.distance;
+//                 time = routes.time;
+//
+//                 for (var i = 0; i < steps.length; i++){
+//                     var routeInfo = {
+//                         startLocation: steps[i].start_location,
+//                         endLocation: steps[i].end_location
+//                     }
+//
+//                     coordians[i] = routeInfo;
+//
+//                 }
+//
+//             });
+//
+//             var info = {
+//                 distance: distance,
+//                 time: time,
+//                 coordians: coordians
+//             };
+//             return info;
+//         });
+//
+//
+//
+//     }
+// });
+
+
+
+
+
 
 
 
