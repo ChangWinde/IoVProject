@@ -172,7 +172,7 @@ window.onLoad  = function(){
             //ajax发送数据
             $.ajax({
                 type: 'GET',
-                url: "/processNavi",
+                url: "http://localhost:3000/processNavi",
                 data: routes,
                 success: function (data, textStatus) {
                     var length = document.getElementById("routeLength");
@@ -194,9 +194,13 @@ window.onLoad  = function(){
                         time.innerHTML = feeInfo.time
 
                     }
+                    //TODO 导航预览
+
                     //产生导航栏标签
                     var naviOpt = document.getElementsByClassName('navi-opt')[0];
                     naviOpt.classList.add('block');
+
+                    //TODO 点击开始导航按钮后开始导航
                 },
                 error: function (data, textStatus) {
                     alert("生成路径失败")
