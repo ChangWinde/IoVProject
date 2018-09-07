@@ -98,96 +98,114 @@ window.onLoad  = function() {
                 autoFitView: true
             });
             //获得四种规划方案
-            currentLocation = new AMap.LngLat(118.8208293915, 31.9314407620);
+            // currentLocation = new AMap.LngLat(118.8208293915, 31.9314407620);
             var leastDistancePlan, leastTimePlan, leastFeePlan, trafficPlan;
-            var drivings = [leastDistanceDriving, leastTimeDriving, leastFeeDriving, leastTrafficDriving];
-            var routeSteps = []
+            var drivings = new Array(leastDistanceDriving, leastTimeDriving, leastFeeDriving, leastTrafficDriving);
+            var routeSteps = new Array();
+            var count = 0;
 //TODO 当前有一个同步问题未解决
             new Promise(function (resolve, reject) {
                 var promises = [];
                 //对每个driving创建promise
                 for (var i = 0; i < drivings.length; i++){
-                    promises[i] = new Promise(function (resolve, reject) {
-                        drivings[i].search(currentLocation, EndPoint, {}, function (status, result) {
-                            if (status == "complete"){
-                                resolve(result);
-                            }else {
-                                reject(result);
+                    drivings[i].search(currentLocation, EndPoint, {}, function (status, result) {
+                        if (status == "complete"){
+                            var steps = result.routes[0].steps;
+                            var policy = result.routes[0].policy;
+                            var length = result.routes[0].distance;
+                            var time = result.routes[0].time;
+                            var routeInfo = [];
+                            for (var j = 0; j < steps.length; j++){
+                                routeInfo[j] = steps[j].path;
                             }
-
-                        })
-                    }).then(function (result) {
-                        //取出信息
-                        var steps = result.routes[0].steps;
-                        var routeInfo = [];
-                        for (var j = 0; j < steps.length; j++){
-                            routeInfo[j] = steps[j].path;
+                            var info = {
+                                policy : policy,
+                                routeInfo : routeInfo,
+                                length: length,
+                                time: time
+                            }
+                            routeSteps.push(info);
+                        }else {
+                            reject(result);
                         }
-                        routeSteps[i] = routeInfo;
 
-
-
-                    }).catch(function (reason) {
-                        reject(reason);
                     })
 
-                    setTimeout(resolve(routeSteps), 10000)
+
+
+
+
 
                 }
-                console.log(routeSteps);
+                setTimeout(function () {
+                    console.log("time up");
+                    console.log(routeSteps)
+                    resolve(routeSteps);
+                }, 5000)
+
 
                 //获得到数据后
             }).then(function (result) {
                 //向服务器发送数据
-                console.log(result);
+                //TODO 使用ajax向服务器发送数据，成功接收后产生导航信息标签
+                //ajax发送数据
+                $.ajax({
+                    type: 'GET',
+                    url: "http://localhost:3000/processNavi",
+                    data: routeSteps,
+                    success: function (data, textStatus) {
+                        var length = document.getElementById("routeLength");
+                        var time = document.getElementById("routeTime");
+                        length.innerHTML = "距离: ";
+                        length.innerHTML = "耗时： ";
+                        if(data == "distance"){
+                            var distanceInfo = parseByPolicy("距离最短", routeSteps);
+                            length.innerHTML += distanceInfo.length;
+                            time.innerHTML += distanceInfo.time;
+
+                        }else if (data == "time"){
+                            var timeInfo = parseByPolicy("速度最快", routeSteps);
+                            length.innerHTML += timeInfo.length;
+                            time.innerHTML += timeInfo.time;
+
+                        } else if(data == "traffic"){
+                            var trafficInfo = parseByPolicy("参考交通信息最快", routeSteps);
+                            length.innerHTML += trafficInfo.length;
+                            time.innerHTML += trafficInfo.time;
+
+                        }else {
+                            var feeInfo = parseByPolicy("费用最低", routeSteps);
+                            length.innerHTML += feeInfo.length;
+                            time.innerHTML += feeInfo.time
+
+                        }
+                        //TODO 导航预览
+
+                        //产生导航栏标签
+                        var naviOpt = document.getElementsByClassName('navi-opt')[0];
+                        naviOpt.classList.add('block');
+
+                        //TODO 点击开始导航按钮后开始导航（不存在的没有）
+
+                    },
+                    error: function (data, textStatus) {
+                        alert("生成路径失败")
+
+                    },
+                    dataType: String
+                });
             }).catch(function (reason) {
                 console.log(reason);
 
             });
 
-
-
-
-            function getPlans(drivings, plans){
-
+            function parseByPolicy(policy, info) {
+                for (var i = 0; i < info.length; i++ ){
+                    if(info[i].policy == policy){
+                        return info[i];
+                    }
+                }
             }
-            // leastDistanceDriving.search(currentLocation, EndPoint, {}, function (status, result) {
-            //     if (status == "complete")
-            //     {
-            //         leastDistancePlan = result;
-            //     }else {
-            //         console.log(result);
-            //     }
-            //
-            // });
-            // leastTimeDriving.search(currentLocation, EndPoint, {}, function (status, result) {
-            //     if (status == "complete")
-            //     {
-            //         leastTimePlan = result;
-            //     }else {
-            //         console.log(result);
-            //     }
-            //
-            // });
-            // leastFeeDriving.search(currentLocation, EndPoint, {}, function (status, result) {
-            //     if (status == "complete")
-            //     {
-            //         leastFeePlan = result;
-            //     }else {
-            //         console.log(result);
-            //     }
-            //
-            // });
-            // leastTrafficDriving.search(currentLocation, EndPoint, {}, function (status, result) {
-            //     if (status == "complete")
-            //     {
-            //         console.log(88888)
-            //         trafficPlan = result;
-            //     }else {
-            //         console.log(result);
-            //     }
-            //
-            // });
 
 
 
@@ -292,52 +310,12 @@ document.head.appendChild(jsapi);
 //
 //
 //
-//             //TODO 使用ajax向服务器发送数据，成功接收后产生导航信息标签
-//             //ajax发送数据
-//             $.ajax({
-//                 type: 'GET',
-//                 url: "http://localhost:3000/processNavi",
-//                 data: routes,
-//                 success: function (data, textStatus) {
-//                     var length = document.getElementById("routeLength");
-//                     var time = document.getElementById("routeTime");
-//                     if(data == "distance"){
-//                         length.innerHTML = distanceInfo.length;
-//                         time.innerHTML = distanceInfo.time;
-//
-//                     }else if (data == "time"){
-//                         length.innerHTML = timeInfo.length;
-//                         time.innerHTML = timeInfo.time;
-//
-//                     } else if(data == "traffic"){
-//                         length.innerHTML = trafficInfo.length;
-//                         time.innerHTML = trafficInfo.time;
-//
-//                     }else {
-//                         length.innerHTML = feeInfo.length;
-//                         time.innerHTML = feeInfo.time
-//
-//                     }
-//                     //TODO 导航预览
-//
-//                     //产生导航栏标签
-//                     var naviOpt = document.getElementsByClassName('navi-opt')[0];
-//                     naviOpt.classList.add('block');
-//
-//                     //TODO 点击开始导航按钮后开始导航
-//                 },
-//                 error: function (data, textStatus) {
-//                     alert("生成路径失败")
-//
-//                 },
-//                 dataType: String
-//             });
-//
-//
-//
-//
-//             //map.setCenter(marker.getPosition());
-//         });
+
+
+
+
+
+            //map.setCenter(marker.getPosition());
 //
 //
 //
