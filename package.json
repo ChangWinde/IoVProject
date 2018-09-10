@@ -8,7 +8,10 @@
   "dependencies": {
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.9",
+    "ethereumjs-testrpc": "^6.0.3",
     "express": "~4.16.0",
-    "morgan": "~1.9.0"
+    "morgan": "~1.9.0",
+    "truffle": "^4.1.14",
+    "truffle-contract": "^3.0.6"
   }
 }

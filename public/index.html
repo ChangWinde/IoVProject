@@ -15,7 +15,6 @@
     <script type="text/javascript" src="./javascripts/index.js"></script>
 
 
-
 </head>
 
 <body>
@@ -41,11 +40,24 @@
         </script>
     </div>
     <div id="show_text3">
-        <!--
-        <script>
-            setInterval("coin()",1000);
 
-        </script>-->
+        <script>
+            setInterval( $.ajax({
+                type: 'GET',
+                url: "http://localhost:3000/users",
+                data: routeSteps,
+                success: function (data, textStatus) {
+                    document.getElementById("show_text3").innerHTML = data;
+
+                },
+                error: function (data, textStatus) {
+                    alert("error")
+
+                },
+                dataType: String
+            }),1000);
+        </script>
+
     </div>
     <div id="voice">
         <img src="./images/gueryuyin.png">
