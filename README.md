@@ -1,6 +1,6 @@
-IOC
+# IOC
 
-truffle
+## truffle
 
 - Requirements
 
@@ -43,7 +43,7 @@ Once this operation is completed, you'll now have a project structure with the f
 
   This will look for a network definition called development in the configuration, and connect to it, if available. You can override this using the --network <name> option
 
-ganache-cli
+## ganache-cli
 
   Ganache CLI, part of the Truffle suite of Ethereum development tools, is the command line version of Ganache, your personal blockchain for Ethereum development.
 
@@ -55,6 +55,6 @@ ganache-cli
 
 
 
-Web3
+## Web3
 
 
