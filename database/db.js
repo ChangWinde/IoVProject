@@ -62,7 +62,17 @@ function deleteStreetCrowdCT(start,end,callback){
     let sql = "DELETE FROM record WHERE start = ? AND end =?";
     query(sql,[start,end],callback);
 }
-
+function init (values){
+    for(let i = 0;i<values.length;i++){
+        let value = values[i].routeInfo;
+        for (let j = 0;j<value.length;j++){
+            for (let k = 0;k<value[j].length;k++){
+                // insertStreetCrowdCT(values[j][k].lng,values[j][k].lat);
+                console.log(values[i][j][k]);
+            }
+        }
+    }
+}
 // deleteStreetCrowdCT("123","456",function (e,r,f) {
 //     if(!e)
 //         console.log(r);
