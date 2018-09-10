@@ -103,10 +103,8 @@ window.onLoad  = function() {
             var drivings = new Array(leastDistanceDriving, leastTimeDriving, leastFeeDriving, leastTrafficDriving);
             var routeSteps = new Array();
             var count = 0;
-//TODO 当前有一个同步问题未解决
+
             new Promise(function (resolve, reject) {
-                var promises = [];
-                //对每个driving创建promise
                 for (var i = 0; i < drivings.length; i++){
                     drivings[i].search(currentLocation, EndPoint, {}, function (status, result) {
                         if (status == "complete"){
@@ -130,11 +128,6 @@ window.onLoad  = function() {
                         }
 
                     })
-
-
-
-
-
 
                 }
                 setTimeout(function () {
