@@ -13,6 +13,7 @@
     <script src="https://cdn.bootcss.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script type="text/javascript" src="./javascripts/index.js"></script>
+    <script src="http://code.jquery.com/jquery-3.3.1.js"></script>
 
 
 </head>
@@ -42,20 +43,21 @@
     <div id="show_text3">
 
         <script>
-            setInterval( $.ajax({
-                type: 'GET',
-                url: "http://localhost:3000/users",
-                data: routeSteps,
-                success: function (data, textStatus) {
-                    document.getElementById("show_text3").innerHTML = data;
+            setInterval(function(){
+                $.ajax({
+                        type: 'GET',
+                        url: "http://localhost:3000/users",
+                        data: 111,
+                        success: function (data, textStatus) {
+                            document.getElementById("show_text3").innerHTML = data.ippcoin;
 
-                },
-                error: function (data, textStatus) {
-                    alert("error")
+                        },
+                        error: function (data, textStatus) {
+                            console.log("error")
 
-                },
-                dataType: String
-            }),1000);
+                        }
+                    })
+            },1000);
         </script>
 
     </div>
