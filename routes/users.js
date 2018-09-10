@@ -3,7 +3,7 @@ var router = express.Router();
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
+  res.end( web3Test.getToken({from:a3}).toNumber());
 });
 
 module.exports = router;
