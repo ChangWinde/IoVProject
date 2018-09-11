@@ -1,4 +1,5 @@
-var mysql=require("mysql");
+var mysql = require('mysql');
+var async = require('async');
 var pool = mysql.createPool({
     host: 'localhost',
     user: 'root',
@@ -62,6 +63,7 @@ function deleteStreetCrowdCT(start,end,callback){
     let sql = "DELETE FROM record WHERE start = ? AND end =?";
     query(sql,[start,end],callback);
 }
+//init
 function init (values){
     for(let i = 0;i<values.length;i++){
         let value = values[i].routeInfo;
@@ -73,6 +75,53 @@ function init (values){
         }
     }
 }
+let crowdness = Array();
+//get best road
+function getBestRoadBasic (roads){
+    for(let i = 0;i<4;i++){
+        crowdness[i] = 0;
+        let road = roads[i].routeInfo;
+        for (let j = 0;j<road.length;j++){
+            for (let k = 0;k<road[j].length;k++){
+                getStreetCrowdCT(road[j][k].lng,road[j][k].lat,function (e,r,f) {
+                    crowdness[i] += (1 - (r[0].crowd/r[0].total)*(1-0.667/r[0].count));
+                });
+            }
+        }
+    }
+    // let count = 0;
+    // for(let i = 1;i<4;i++){
+    //     let min = crowdness[0];
+    //     if(crowdness[i]<min){
+    //         min = crowdness[i]
+    //         count = i;
+    //     }
+    // }
+    // callback(roads[count].policy);
+}
+//get best policy
+function getBestRoad (roads) {
+    let count = 0;
+    for(let i = 1;i<4;i++){
+        let min = crowdness[0];
+        if(crowdness[i]<min){
+            min = crowdness[i]
+            count = i;
+        }
+    }
+    return roads[count].policy;
+}
+
+// for(let i = 0;i<2;i++){
+//     var sum = 0;
+//     getStreetCrowdCT("111","222",function (e,r,f) {
+//         console.log(i+"     "+r[0].total);
+//         console.log(i+"     "+r[0].crowd);
+//         sum += r[0].total+ r[0].crowd;
+//         console.log(i+"     "+sum);
+//     })
+//
+// }
 // deleteStreetCrowdCT("123","456",function (e,r,f) {
 //     if(!e)
 //         console.log(r);
@@ -91,19 +140,51 @@ function init (values){
 //     else
 //         console.log("Error");
 // })
+
 // getStreetCrowdCT("111","222",function (e,r,f) {
 //     if(!e)
 //         console.log(r[0].count);
 //     else
 //         console.log(e);
 // })
-// getLinkedPoint("111",function (e,r,f) {
+// getLinkedPoint(test,function (e,r,f) {
 //     if(!e)
 //         console.log(r);
 //     else
 //         console.log("Error");
 // })
-
+// var sum =0;
+// function f1(callback){
+//     for(let i = 0;i<2;i++){
+//         getStreetCrowdCT("111","222",function (e,r,f) {
+//             console.log(i+"     "+r[0].total);
+//             console.log(i+"     "+r[0].crowd);
+//             sum += r[0].total+ r[0].crowd;
+//             console.log(i+"     "+sum);
+//         })
+//     }
+//     setTimeout(function () {
+//         return f2();
+//     },2000);
+// }
+// function f2(){
+//     console.log(sum)
+//     return sum;
+// }
+// f1(f2);
+// async.waterfall([
+//     function (next) {
+//     var sum = 0;
+//
+//     next(null,sum);
+// },function (data,next) {
+//     console.log(data);
+// }],function (err,res) {
+//     if(err)
+//         console.log(e);
+//     else
+//         console.log(r);
+// })
 
 module.exports = {
     createTable:createTable,
@@ -111,5 +192,7 @@ module.exports = {
     getStreetCrowdCT:getStreetCrowdCT,
     insertStreetCrowdCT:insertStreetCrowdCT,
     updateStreetCrowdCT:updateStreetCrowdCT,
-    deleteStreetCrowdCT:deleteStreetCrowdCT
+    deleteStreetCrowdCT:deleteStreetCrowdCT,
+    getBestRoadBasic:getBestRoadBasic,
+    getBestRoad:getBestRoad
 };
