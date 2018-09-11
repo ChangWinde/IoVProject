@@ -67,8 +67,8 @@ function init (values){
         let value = values[i].routeInfo;
         for (let j = 0;j<value.length;j++){
             for (let k = 0;k<value[j].length;k++){
-                // insertStreetCrowdCT(values[j][k].lng,values[j][k].lat);
-                console.log(values[i][j][k]);
+                // insertStreetCrowdCT(value[j][k].lng,value[j][k].lat);
+
             }
         }
     }
@@ -111,5 +111,6 @@ module.exports = {
     getStreetCrowdCT:getStreetCrowdCT,
     insertStreetCrowdCT:insertStreetCrowdCT,
     updateStreetCrowdCT:updateStreetCrowdCT,
-    deleteStreetCrowdCT:deleteStreetCrowdCT
+    deleteStreetCrowdCT:deleteStreetCrowdCT,
+    init: init
 };

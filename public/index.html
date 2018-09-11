@@ -11,9 +11,11 @@
     <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://cdn.bootcss.com/popper.js/1.12.5/umd/popper.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
     <script type="text/javascript" src="./javascripts/index.js"></script>
+    <script type="text/javascript" src="./javascripts/openApp.js"></script>
     <script src="http://code.jquery.com/jquery-3.3.1.js"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.0.js"></script>
 
 
 </head>
@@ -40,29 +42,16 @@
 
         </script>
     </div>
-    <div id="show_text3">
+    <div id="ippcoin">
 
         <script>
-            setInterval(function(){
-                $.ajax({
-                        type: 'GET',
-                        url: "http://localhost:3000/users",
-                        data: 111,
-                        success: function (data, textStatus) {
-                            document.getElementById("show_text3").innerHTML = data.ippcoin;
-
-                        },
-                        error: function (data, textStatus) {
-                            console.log("error")
-
-                        }
-                    })
-            },1000);
+            // setInterval("alert(111)",1000);
+            setInterval("getIppCoin()",1000);
         </script>
 
     </div>
     <div id="voice">
-        <img src="./images/gueryuyin.png">
+        <img src="./images/gueryuyin.png" onclick="requestFullScreen()">
     </div>
 
     <div class="testswitch">
@@ -95,16 +84,16 @@
         <input type="image" src="./images/maps.png "  name="img" />
     </div>
     <div id="biao1" >
-        <img src="./images/1.png">
+        <img src="./images/1.png" id="weixin">
     </div>
     <div id="biao2">
-        <img src="./images/2.png">
+        <img src="./images/2.png" id="weather">
     </div>
     <div id="biao3">
-        <img src="./images/3.png">
+        <img src="./images/3.png" id="facetime">
     </div>
     <div id="biao4">
-        <img src="./images/4.png">
+        <img src="./images/4.png" onclick="openWeiXin()">
     </div>
 
 

@@ -11,6 +11,7 @@
     "ethereumjs-testrpc": "^6.0.3",
     "express": "~4.16.0",
     "morgan": "~1.9.0",
+    "mysql": "^2.16.0",
     "truffle": "^4.1.14",
     "truffle-contract": "^3.0.6"
   }

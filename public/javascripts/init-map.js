@@ -98,7 +98,7 @@ window.onLoad  = function() {
                 autoFitView: true
             });
             //获得四种规划方案
-            // currentLocation = new AMap.LngLat(118.8208293915, 31.9314407620);
+            currentLocation = new AMap.LngLat(118.8208293915, 31.9314407620);
             var leastDistancePlan, leastTimePlan, leastFeePlan, trafficPlan;
             var drivings = new Array(leastDistanceDriving, leastTimeDriving, leastFeeDriving, leastTrafficDriving);
             var routeSteps = new Array();
@@ -116,6 +116,7 @@ window.onLoad  = function() {
                             for (var j = 0; j < steps.length; j++){
                                 routeInfo[j] = steps[j].path;
                             }
+                            routeInfo = JSON.stringify(routeInfo);
                             var info = {
                                 policy : policy,
                                 routeInfo : routeInfo,
@@ -132,44 +133,54 @@ window.onLoad  = function() {
                 }
                 setTimeout(function () {
                     console.log("time up");
-                    console.log(routeSteps)
-                    resolve(routeSteps);
+                    resolve(JSON.stringify(routeSteps));
+                    console.log(JSON.stringify(routeSteps))
                 }, 5000)
 
 
                 //获得到数据后
             }).then(function (result) {
                 //向服务器发送数据
-                //TODO 使用ajax向服务器发送数据，成功接收后产生导航信息标签
                 //ajax发送数据
+                function paraseTime(time){
+                    if (time < 3600){
+                        var ret = time / 60;
+                        return parseInt(ret)  + "分钟";
+                    }else {
+                        var hour = time / 3600;
+                        var min = (time % 3600) / 60;
+                        return parseInt(hour)  + "小时" + parseInt(min)  + "分钟";
+                    }
+                }
                 $.ajax({
-                    type: 'GET',
-                    url: "http://localhost:3000/processNavi",
-                    data: routeSteps,
+                    type: 'POST',
+                    url: "/processNavi",
+                    traditional: true,
+                    data: {result: result},
                     success: function (data, textStatus) {
                         var length = document.getElementById("routeLength");
                         var time = document.getElementById("routeTime");
                         length.innerHTML = "距离: ";
-                        length.innerHTML = "耗时： ";
+                        time.innerHTML = "耗时: ";
                         if(data == "distance"){
                             var distanceInfo = parseByPolicy("距离最短", routeSteps);
-                            length.innerHTML += distanceInfo.length;
-                            time.innerHTML += distanceInfo.time;
+                            length.innerHTML += distanceInfo.length / 1000 + "公里";
+                            time.innerHTML += paraseTime(distanceInfo.time) ;
 
                         }else if (data == "time"){
                             var timeInfo = parseByPolicy("速度最快", routeSteps);
-                            length.innerHTML += timeInfo.length;
-                            time.innerHTML += timeInfo.time;
+                            length.innerHTML += timeInfo.length / 1000 + "公里";
+                            time.innerHTML += paraseTime(timeInfo.time);
 
                         } else if(data == "traffic"){
                             var trafficInfo = parseByPolicy("参考交通信息最快", routeSteps);
-                            length.innerHTML += trafficInfo.length;
-                            time.innerHTML += trafficInfo.time;
+                            length.innerHTML += trafficInfo.length / 1000 + "公里";
+                            time.innerHTML += paraseTime(trafficInfo.time);
 
                         }else {
                             var feeInfo = parseByPolicy("费用最低", routeSteps);
-                            length.innerHTML += feeInfo.length;
-                            time.innerHTML += feeInfo.time
+                            length.innerHTML += feeInfo.length / 1000 + "公里";
+                            time.innerHTML += paraseTime(feeInfo.time);
 
                         }
                         //TODO 导航预览
@@ -185,7 +196,6 @@ window.onLoad  = function() {
                         alert("生成路径失败")
 
                     },
-                    dataType: String
                 });
             }).catch(function (reason) {
                 console.log(reason);
