@@ -1,5 +1,5 @@
 var currentLocation;
-
+var EndPoint;
 //初始化地图
 window.onLoad  = function() {
     console.log("initial map");
@@ -34,7 +34,6 @@ window.onLoad  = function() {
 
     //加载自动推荐目的地
     AMap.plugin(['AMap.Autocomplete', 'AMap.PlaceSearch', 'AMap.Driving'], function () {
-        var EndPoint;
         var autoOptions = {
             input:"location"
         };
@@ -73,29 +72,42 @@ window.onLoad  = function() {
             console.log("startplanning")
             //获得高德路径规划方案
             //创建四种规划方案
-            var leastDistanceDriving = new AMap.Driving({
+            var leastDistanceDrivingForShow = new AMap.Driving({
                 policy: AMap.DrivingPolicy.LEAST_DISTANCE,
                 map: map,
                 showTraffic: true,
                 autoFitView: true
             });
-            var leastTimeDriving = new AMap.Driving({
+
+            var leastDistanceDriving = new AMap.Driving({
+                policy: AMap.DrivingPolicy.LEAST_DISTANCE
+            });
+            var leastTimeDrivingForShow = new AMap.Driving({
                 policy: AMap.DrivingPolicy.LEAST_TIME,
                 map: map,
                 showTraffic: true,
                 autoFitView: true
             });
-            var leastFeeDriving = new AMap.Driving({
+            var leastTimeDriving = new AMap.Driving({
+                policy: AMap.DrivingPolicy.LEAST_TIME
+            });
+            var leastFeeDrivingForShow = new AMap.Driving({
                 policy: AMap.DrivingPolicy.LEAST_FEE,
                 map: map,
                 showTraffic: true,
                 autoFitView: true
             });
-            var leastTrafficDriving = new AMap.Driving({
+            var leastFeeDriving = new AMap.Driving({
+                policy: AMap.DrivingPolicy.LEAST_FEE
+            });
+            var leastTrafficDrivingForShow = new AMap.Driving({
                 policy: AMap.DrivingPolicy.REAL_TRAFFIC,
                 map: map,
                 showTraffic: true,
                 autoFitView: true
+            });
+            var leastTrafficDriving = new AMap.Driving({
+                policy: AMap.DrivingPolicy.REAL_TRAFFIC
             });
             //获得四种规划方案
             currentLocation = new AMap.LngLat(118.8208293915, 31.9314407620);
@@ -134,8 +146,7 @@ window.onLoad  = function() {
                 setTimeout(function () {
                     console.log("time up");
                     resolve(JSON.stringify(routeSteps));
-                    console.log(JSON.stringify(routeSteps))
-                }, 5000)
+                }, 3000)
 
 
                 //获得到数据后
@@ -162,26 +173,58 @@ window.onLoad  = function() {
                         var time = document.getElementById("routeTime");
                         length.innerHTML = "距离: ";
                         time.innerHTML = "耗时: ";
-                        if(data == "distance"){
+                        console.log(data);
+                        var button = document.getElementById("navi-button1");
+                        if(data == "距离最短"){
                             var distanceInfo = parseByPolicy("距离最短", routeSteps);
                             length.innerHTML += distanceInfo.length / 1000 + "公里";
                             time.innerHTML += paraseTime(distanceInfo.time) ;
+                            leastDistanceDrivingForShow.search(currentLocation, EndPoint, {}, function (status, result) {
+                                button.onclick = function () {
+                                    leastDistanceDrivingForShow.searchOnAMAP({
+                                        origin: result.origin,
+                                        destination: result.destination
+                                    })
+                                }
+                            });
 
-                        }else if (data == "time"){
+                        }else if (data == "速度最快"){
                             var timeInfo = parseByPolicy("速度最快", routeSteps);
                             length.innerHTML += timeInfo.length / 1000 + "公里";
                             time.innerHTML += paraseTime(timeInfo.time);
+                            leastTimeDrivingForShow.search(currentLocation, EndPoint, {}, function (status, result) {
+                                button.onclick = function () {
+                                    leastTimeDrivingForShow.searchOnAMAP({
+                                        origin: result.origin,
+                                        destination: result.destination
+                                    })
+                                }
+                            });
 
-                        } else if(data == "traffic"){
+                        } else if(data == "参考交通信息最快"){
                             var trafficInfo = parseByPolicy("参考交通信息最快", routeSteps);
                             length.innerHTML += trafficInfo.length / 1000 + "公里";
                             time.innerHTML += paraseTime(trafficInfo.time);
-
+                            leastTrafficDrivingForShow.search(currentLocation, EndPoint, {}, function (status, result) {
+                                button.onclick = function () {
+                                    leastTrafficDrivingForShow.searchOnAMAP({
+                                        origin: result.origin,
+                                        destination: result.destination
+                                    })
+                                }
+                            });
                         }else {
                             var feeInfo = parseByPolicy("费用最低", routeSteps);
                             length.innerHTML += feeInfo.length / 1000 + "公里";
                             time.innerHTML += paraseTime(feeInfo.time);
-
+                            leastFeeDrivingForShow.search( currentLocation, EndPoint, {}, function (status, result) {
+                                button.onclick = function () {
+                                    leastFeeDrivingForShow.searchOnAMAP({
+                                        origin: result.origin,
+                                        destination: result.destination
+                                    })
+                                }
+                            });
                         }
                         //TODO 导航预览
 

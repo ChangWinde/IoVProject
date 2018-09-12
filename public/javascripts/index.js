@@ -80,6 +80,13 @@ $(document).ready(function(){
     });
 });
 
+$(document).ready(function(){
+
+    $("#wechat").click(function(){
+
+        $("#right_body").load("https://wx.qq.com/");
+    });
+});
 
 
 
