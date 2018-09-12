@@ -7,9 +7,17 @@
 - truffle-contact：3.0.6
 - express：~4.16.0
 - mysql：2.16.0
-
+- geth：lastest
 ## Installation
+### geth
+- 安装
 
+   ```
+   sudo apt-get install software-properties-common 
+   sudo add-apt-repository -y ppa:ethereum/ethereum 
+   sudo apt-get update 
+   sudo apt-get install ethereum 
+   ```
 ### Node
 
 - 安装
