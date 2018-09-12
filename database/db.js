@@ -3,7 +3,7 @@ var async = require('async');
 var pool = mysql.createPool({
     host: 'localhost',
     user: 'root',
-    password: 'mm40659614',
+    password: '123456',
     database: 'IOC',
     port:3306
 });
@@ -68,8 +68,10 @@ function init (values){
     for(let i = 0;i<values.length;i++){
         let value = values[i].routeInfo;
         for (let j = 0;j<value.length;j++){
-            for (let k = 0;k<value[j].length;k++){
-                insertStreetCrowdCT(value[j][k].lng,value[j][k].lat, function (error,results,fields) {
+            for (let k = 0;k<value[j].length-1;k++){
+                let str1 = value[j][k].lng+value[j][k].lat;
+                let str2 = value[j][k+1].lng+value[j][k+1].lat;
+                insertStreetCrowdCT(str1,str2, function (error,results,fields) {
 
                 });
             }
@@ -85,9 +87,12 @@ function getBestRoadBasic (roads, res){
         let road = roads[i].routeInfo;
         for (let j = 0;j<road.length;j++){
 
-            for (let k = 0;k<road[j].length;k++){
-                getStreetCrowdCT(road[j][k].lng,road[j][k].lat,function (e,r,f) {
+            for (let k = 0;k<road[j].length-1;k++){
+                let str1 = road[j][k].lng+road[j][k].lat;
+                let str2 = road[j][k+1].lng+road[j][k+1].lat;
+                getStreetCrowdCT(str1,str2,function (e,r,f) {
                     pros.push(new Promise(function (resolve, reject) {
+
 
                         crowdness[i] += (1 - (r[0].crowd/r[0].total)*(1-0.667/r[0].count));
                         resolve();
@@ -114,7 +119,40 @@ function getBestRoad (roads, res) {
     }
     res.send(roads[count].policy) ;
 }
-
+//update count
+function updateCount(count,start,end,callback) {
+    let sql = "UPDATE record SET count = ? WHERE start = ? AND end = ?";
+    query(sql,[count,start,end],callback);
+}
+//get count
+function getCount(start,end,callback) {
+    sql = "SELECT count FROM record WHERE start = ? AND  end = ?";
+    query(sql, [start, end], callback);
+}
+//web3
+function changeCount(start1,end1,start2,end2) {
+    let pros = Array();
+    let count1 = 0;
+    let count2 = 0;
+    pros.push(new Promise(function (resolve, reject) {
+        let sql = "SELECT count FROM record WHERE start = ? AND  end = ?";
+        query(sql, [start1, end1], function (e, r, f) {
+            count1 = r[0].count - 1;
+            resolve(count1);
+        });
+    }));
+    pros.push(new Promise(function (resolve, reject) {
+        let sql = "SELECT count FROM record WHERE start = ? AND  end = ?";
+        query(sql, [start2, end2], function (e, r) {
+            count2 = r[0].count + 1;
+            resolve(count2);
+        });
+    }));
+    Promise.all(pros).then(function (resout) {
+        updateCount(resout[0],start1,end1,function (e) {});
+        updateCount(resout[1],start2,end2,function (e) {});
+    });
+}
 // for(let i = 0;i<2;i++){
 //     var sum = 0;
 //     getStreetCrowdCT("111","222",function (e,r,f) {
@@ -198,5 +236,8 @@ module.exports = {
     deleteStreetCrowdCT:deleteStreetCrowdCT,
     getBestRoadBasic:getBestRoadBasic,
     getBestRoad:getBestRoad,
+    updateCount:updateCount,
+    changeCount:changeCount,
+    getCount:getCount,
     init:init
 };
