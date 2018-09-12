@@ -1,4 +1,68 @@
 # IOC
+Requirement
+
+- Linux ubuntu 18.04 LST
+- Node：8.10.0
+- truffle: 4.1.14 
+- truffle-contact：3.0.6
+- express：~4.16.0
+- mysql：2.16.0
+
+Installation
+
+Node
+
+- 安装
+
+    sudo apt-get install nodejs
+
+- 注意apt-get可能需要更新的问题
+
+    sudo apt-get update
+    sudo apt-get upgrade
+
+MySQL
+
+- 安装
+
+    sudo apt-get install mysql-server
+    sudo apt install mysql-client
+    sudo apt install libmysqlclient-dev
+
+- 检验安装
+
+    sudo netstat -tap | grep mysql
+
+- 允许mysql远程访问
+
+    sudo vim /etc/mysql/mysql.conf.d/mysqld.cnf
+
+mysqld.cnf文件中，注释掉bind-address = 127.0.0.1本行，退出保存
+
+- 授权
+
+    grant all on *.* to root@'%' identified by 'your passward' with grant option;
+    flush privileges;
+
+- 重启mysql
+
+    service mysql restart
+
+运行源代码
+
+- 安装node_modules
+
+    cd ./IoVProject
+    npm install 
+
+- 运行
+
+    cd ./IoVProject/bin
+    node www.js
+
+使用iPad访问Google Chrome（或其他浏览器）查看
+
+
 
 ## truffle
 
