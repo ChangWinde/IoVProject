@@ -69,38 +69,41 @@ function init (values){
         let value = values[i].routeInfo;
         for (let j = 0;j<value.length;j++){
             for (let k = 0;k<value[j].length;k++){
-                // insertStreetCrowdCT(values[j][k].lng,values[j][k].lat);
-                console.log(values[i][j][k]);
+                insertStreetCrowdCT(value[j][k].lng,value[j][k].lat, function (error,results,fields) {
+
+                });
             }
         }
     }
 }
 let crowdness = Array();
 //get best road
-function getBestRoadBasic (roads){
+function getBestRoadBasic (roads, res){
+    let pros = Array();
     for(let i = 0;i<4;i++){
         crowdness[i] = 0;
         let road = roads[i].routeInfo;
         for (let j = 0;j<road.length;j++){
+
             for (let k = 0;k<road[j].length;k++){
                 getStreetCrowdCT(road[j][k].lng,road[j][k].lat,function (e,r,f) {
-                    crowdness[i] += (1 - (r[0].crowd/r[0].total)*(1-0.667/r[0].count));
+                    pros.push(new Promise(function (resolve, reject) {
+
+                        crowdness[i] += (1 - (r[0].crowd/r[0].total)*(1-0.667/r[0].count));
+                        resolve();
+
+                    }).catch(function (reason) {
+                        console.log("error")
+                    }))
+
                 });
             }
         }
     }
-    // let count = 0;
-    // for(let i = 1;i<4;i++){
-    //     let min = crowdness[0];
-    //     if(crowdness[i]<min){
-    //         min = crowdness[i]
-    //         count = i;
-    //     }
-    // }
-    // callback(roads[count].policy);
+    Promise.all(pros).then(getBestRoad(roads, res)).catch(function (reason) {console.log(reason);})
 }
 //get best policy
-function getBestRoad (roads) {
+function getBestRoad (roads, res) {
     let count = 0;
     for(let i = 1;i<4;i++){
         let min = crowdness[0];
@@ -109,7 +112,7 @@ function getBestRoad (roads) {
             count = i;
         }
     }
-    return roads[count].policy;
+    res.send(roads[count].policy) ;
 }
 
 // for(let i = 0;i<2;i++){
@@ -194,5 +197,6 @@ module.exports = {
     updateStreetCrowdCT:updateStreetCrowdCT,
     deleteStreetCrowdCT:deleteStreetCrowdCT,
     getBestRoadBasic:getBestRoadBasic,
-    getBestRoad:getBestRoad
+    getBestRoad:getBestRoad,
+    init:init
 };
