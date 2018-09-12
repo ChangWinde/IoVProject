@@ -14,7 +14,7 @@
 
 - 安装
 
-    sudo apt-get install nodejs
+    `sudo apt-get install nodejs`
 
 - 注意apt-get可能需要更新的问题
 
