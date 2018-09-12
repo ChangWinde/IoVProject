@@ -13,9 +13,7 @@
     <script src="https://cdn.bootcss.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
     <script type="text/javascript" src="./javascripts/index.js"></script>
-    <script type="text/javascript" src="./javascripts/openApp.js"></script>
     <script src="http://code.jquery.com/jquery-3.3.1.js"></script>
-    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.0.js"></script>
 
 
 </head>
@@ -42,11 +40,25 @@
 
         </script>
     </div>
-    <div id="ippcoin">
+    <div id="show_text3">
 
         <script>
-            // setInterval("alert(111)",1000);
-            setInterval("getIppCoin()",1000);
+
+            setInterval(function(){
+                $.ajax({
+                    type: 'GET',
+                    url: "http://localhost:3000/users",
+                    data: 111,
+                    success: function (data, textStatus) {
+                        document.getElementById("show_text3").innerHTML = data.ippcoin;
+
+                    },
+                    error: function (data, textStatus) {
+                        console.log("error")
+
+                    }
+                })
+            },5000);
         </script>
 
     </div>
@@ -54,19 +66,100 @@
         <img src="./images/gueryuyin.png" onclick="requestFullScreen()">
     </div>
 
-    <div class="testswitch">
-        <input class="testswitch-checkbox" id="onoffswitch" type="checkbox">
+    <div class="testswitch" >
+        <input class="testswitch-checkbox" id="onoffswitch" type="checkbox" onclick="upload(this)">
         <label class="testswitch-label" for="onoffswitch">
             <span class="testswitch-inner"></span>
             <span class="testswitch-switch"></span>
         </label>
+        <script>
+            // function upload(checkbox){
+            //          if(checkbox.checked == true){
+            //            $.ajax({
+            //                   type:'GET',
+            //                   url: "http://localhost:3000/users/upload",
+            //                    data: 111,
+            //                    success: function (data, textStatus) {   },
+            //                    error: function (data, textStatus) {
+            //                    console.log("error")
+            //                       }
+            //                }
+            //            )
+            //              setTimeout(upload(checkbox),1000) ;
+            //          }
+            //          else{
+            //              setTimeout(upload(checkbox),1000) ;
+            //          };
+            // }
+            var myVar ;
+           function upload(checkbox){
+
+                if(checkbox.checked == false){
+                        window.clearInterval(myVar)
+                }
+                else {
+                  myVar = setInterval(function(){
+                      console.log("uploading");
+                        // $.ajax({
+                        //     type: 'GET',
+                        //     url: "http://localhost:3000/users/upload",
+                        //     data: 111,
+                        //     success: function (data, textStatus) {
+                        //         // document.getElementById("show_text3").innerHTML = data.ippcoin;
+                        //
+                        //     },
+                        //     error: function (data, textStatus) {
+                        //         console.log("error")
+                        //
+                        //     }
+                        // })
+                    },1000);
+
+                }
+           }
+            // setInterval(function () {
+            //     $.ajax({
+            //         type: 'GET',
+            //         url: "http://localhost:3000/users/upload",
+            //         data: 222,
+            //         success: function (data, textStatus) {
+            //             //   document.getElementById("show_text3").innerHTML = data.ippcoin;
+            //         },
+            //         error: function (data, textStatus) {
+            //             console.log("error")
+            //
+            //         }
+            //     })
+            // }, 1000)
+
+
+        </script>
     </div>
 
     <div id="show_text1">
         共享数据
     </div>
 
-    <button type="button" class="btn-secondary" id="cashing" style="font-size: 10px">兑换</button>
+    <button type="button" class="btn-secondary" id="cashing" style="font-size: 10px" onclick="setChangeToken()">
+        <script>
+            function setChangeToken(){
+                $.ajax({
+                    type: 'GET',
+                    url: "http://localhost:3000/users/cashing",
+                    data: 222,
+                    success: function (data, textStatus) {
+                        document.getElementById("show_text3").innerHTML = data.ippcoin;
+
+                    },
+                    error: function (data, textStatus) {
+                        console.log("error")
+
+                    }
+                })
+            };
+        </script>
+        兑换
+    </button>
 
     <!--<div id="message">-->
         <!--<img src="./images/message.png">-->
