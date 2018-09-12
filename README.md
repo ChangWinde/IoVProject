@@ -69,7 +69,7 @@ mysqld.cnf文件中，注释掉bind-address = 127.0.0.1本行，退出保存
     service mysql restart
     ```
 
-运行源代码
+### 运行源代码
 
 - 安装node_modules
 
