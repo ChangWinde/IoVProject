@@ -9,8 +9,7 @@ router.post('/', function(req, res, next) {
     for (var i = 0; i < routeSteps.length; i++) {
         routeSteps[i].routeInfo = JSON.parse(routeSteps[i].routeInfo);
     }
-    database.init(routeSteps);
-    // database.getBestRoadBasic(routeSteps, res);
+    database.getBestRoadBasic(routeSteps, res);
 
 });
 
