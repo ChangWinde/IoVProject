@@ -35,7 +35,7 @@ router.get('/', function(req, res, next) {
     //console.log(web3Test.getToken({from:"0x200739b45d0f877829a1f6192c5220ed640e15ae"}).toNumber());
 });
 router.get('/cashing', function (req, res, next) {
-    web3Test.exchange(1000,{from:account});
+    web3Test.token2eth(1000,{from:account});
     console.log("1");
    // res.send({ippcoin : web3Test.getToken({from:"0x200739b45d0f877829a1f6192c5220ed640e15ae"}).toNumber()});
     // console.log("2");

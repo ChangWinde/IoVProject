@@ -163,20 +163,27 @@
 
     <button type="button" class="btn-secondary" id="cashing" style="font-size: 10px" onclick="setChangeToken()">
         <script>
+
+
             function setChangeToken(){
-                $.ajax({
-                    type: 'GET',
-                    url: "/users/cashing",
-                    data: 222,
-                    success: function (data, textStatus) {
-                        document.getElementById("ippcoin").innerHTML = data.ippcoin;
+                var count = 0;
+                if (count < 1){
+                    $.ajax({
+                        type: 'GET',
+                        url: "/users/cashing",
+                        data: 222,
+                        success: function (data, textStatus) {
+                            document.getElementById("ippcoin").innerHTML = data.ippcoin;
 
-                    },
-                    error: function (data, textStatus) {
-                        console.log("error")
+                        },
+                        error: function (data, textStatus) {
+                            console.log("error")
 
-                    }
-                })
+                        }
+                    })
+                    count++;
+                }
+
             };
         </script>
         兑换
