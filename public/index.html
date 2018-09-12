@@ -27,6 +27,7 @@
     <div id="time">
         <script>
             //这里代码多了几行，但是不会延迟显示，速度比较好，格式可以自定义，是理想的时间显示
+            getTime();
             setInterval("getTime()",1000);
 
         </script>
@@ -34,23 +35,43 @@
 
     <div id="date">
         <script>
-
-            setInterval("getDate()",1000);
+            getDate();
+            setInterval("getDate()",60000);
 
 
         </script>
     </div>
-    <div id="show_text3">
+    <div id="ippcoin">
 
         <script>
+
+            $.ajax({
+                type: 'GET',
+                url: "/users",
+                data: 111,
+                success: function (data, textStatus) {
+                    if (data.ippcoin > 1000){
+                        data.ippcoin /= 1000;
+                    }
+                    document.getElementById("ippcoin").innerHTML = data.ippcoin + "K";
+
+                },
+                error: function (data, textStatus) {
+                    console.log("error")
+
+                }
+            })
 
             setInterval(function(){
                 $.ajax({
                     type: 'GET',
-                    url: "http://localhost:3000/users",
+                    url: "/users",
                     data: 111,
                     success: function (data, textStatus) {
-                        document.getElementById("show_text3").innerHTML = data.ippcoin;
+                        if (data.ippcoin > 1000){
+                            data.ippcoin /= 1000;
+                        }
+                        document.getElementById("ippcoin").innerHTML = data.ippcoin + "K";
 
                     },
                     error: function (data, textStatus) {
@@ -93,29 +114,29 @@
             // }
             var myVar ;
            function upload(checkbox){
+                //
+                // if(checkbox.checked == false){
+                //         window.clearInterval(myVar)
+                // }
+                // else {
+                //   myVar = setInterval(function(){
+                //       console.log("uploading");
+                //         // $.ajax({
+                //         //     type: 'GET',
+                //         //     url: "/users/upload",
+                //         //     data: 111,
+                //         //     success: function (data, textStatus) {
+                //         //         // document.getElementById("show_text3").innerHTML = data.ippcoin;
+                //         //
+                //         //     },
+                //         //     error: function (data, textStatus) {
+                //         //         console.log("error")
+                //         //
+                //         //     }
+                //         // })
+                //     },1000);
 
-                if(checkbox.checked == false){
-                        window.clearInterval(myVar)
-                }
-                else {
-                  myVar = setInterval(function(){
-                      console.log("uploading");
-                        // $.ajax({
-                        //     type: 'GET',
-                        //     url: "http://localhost:3000/users/upload",
-                        //     data: 111,
-                        //     success: function (data, textStatus) {
-                        //         // document.getElementById("show_text3").innerHTML = data.ippcoin;
-                        //
-                        //     },
-                        //     error: function (data, textStatus) {
-                        //         console.log("error")
-                        //
-                        //     }
-                        // })
-                    },1000);
-
-                }
+                // }
            }
             // setInterval(function () {
             //     $.ajax({
@@ -145,10 +166,10 @@
             function setChangeToken(){
                 $.ajax({
                     type: 'GET',
-                    url: "http://localhost:3000/users/cashing",
+                    url: "/users/cashing",
                     data: 222,
                     success: function (data, textStatus) {
-                        document.getElementById("show_text3").innerHTML = data.ippcoin;
+                        document.getElementById("ippcoin").innerHTML = data.ippcoin;
 
                     },
                     error: function (data, textStatus) {

@@ -3,7 +3,7 @@ var async = require('async');
 var pool = mysql.createPool({
     host: 'localhost',
     user: 'root',
-    password: '123456',
+    password: 'mm40659614',
     database: 'IOC',
     port:3306
 });
@@ -51,7 +51,7 @@ function getStreetCrowdCT(start,end,callback) {
 //insert
 function insertStreetCrowdCT(start,end,callback){
     let sql = "INSERT INTO record VALUES (?,?,?,?,?)";
-    query(sql,[start,end,0,0,0],callback)
+    query(sql,[start,end,1,1,1],callback)
 }
 //update
 function updateStreetCrowdCT(start,end,crowd,total,count,callback){
@@ -69,8 +69,8 @@ function init (values){
         let value = values[i].routeInfo;
         for (let j = 0;j<value.length;j++){
             for (let k = 0;k<value[j].length-1;k++){
-                let str1 = value[j][k].lng+value[j][k].lat;
-                let str2 = value[j][k+1].lng+value[j][k+1].lat;
+                let str1 = value[j][k].lng.toString()+value[j][k].lat.toString();
+                let str2 = value[j][k+1].lng.toString()+value[j][k+1].lat.toString();
                 insertStreetCrowdCT(str1,str2, function (error,results,fields) {
 
                 });
@@ -88,8 +88,8 @@ function getBestRoadBasic (roads, res){
         for (let j = 0;j<road.length;j++){
 
             for (let k = 0;k<road[j].length-1;k++){
-                let str1 = road[j][k].lng+road[j][k].lat;
-                let str2 = road[j][k+1].lng+road[j][k+1].lat;
+                let str1 = road[j][k].lng.toString()+road[j][k].lat.toString();
+                let str2 = road[j][k+1].lng.toString()+road[j][k+1].lat.toString();
                 getStreetCrowdCT(str1,str2,function (e,r,f) {
                     pros.push(new Promise(function (resolve, reject) {
 
