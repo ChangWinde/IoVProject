@@ -130,10 +130,11 @@ function getCount(start,end,callback) {
     query(sql, [start, end], callback);
 }
 //web3
-function changeCount(start1,end1,start2,end2) {
+function changeCount(start1,end1,start2,end2,crowd2) {
     let pros = Array();
     let count1 = 0;
     let count2 = 0;
+    let total2 = 0;
     pros.push(new Promise(function (resolve, reject) {
         let sql = "SELECT count FROM record WHERE start = ? AND  end = ?";
         query(sql, [start1, end1], function (e, r, f) {
@@ -142,15 +143,23 @@ function changeCount(start1,end1,start2,end2) {
         });
     }));
     pros.push(new Promise(function (resolve, reject) {
-        let sql = "SELECT count FROM record WHERE start = ? AND  end = ?";
+        let sql = "SELECT count,crowd,total FROM record WHERE start = ? AND  end = ?";
         query(sql, [start2, end2], function (e, r) {
             count2 = r[0].count + 1;
-            resolve(count2);
+            total2 = r[0].total +1;
+            crowd2 = r[0].crowd+crowd2;
+            if(total2 % 100 == 0)
+                crowd2 = crowd2 *0.9;
+            let arrayInfo = Array();
+            arrayInfo.push(crowd2);
+            arrayInfo.push(total2);
+            arrayInfo.push(count2);
+            resolve(arrayInfo);
         });
-    }));
+    }))
     Promise.all(pros).then(function (resout) {
         updateCount(resout[0],start1,end1,function (e) {});
-        updateCount(resout[1],start2,end2,function (e) {});
+        updateStreetCrowdCT(start2,end2,resout[1][0],resout[1][1],resout[1][2],function (e) {});
     });
 }
 // for(let i = 0;i<2;i++){
