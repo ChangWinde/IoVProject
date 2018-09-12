@@ -14,51 +14,68 @@
 
 - 安装
 
-    `sudo apt-get install nodejs`
+    ```
+    sudo apt-get install nodejs
+    ```
 
 - 注意apt-get可能需要更新的问题
 
+    ```
     sudo apt-get update
     sudo apt-get upgrade
+    ```
 
 ### MySQL
 
 - 安装
 
+    ```
     sudo apt-get install mysql-server
     sudo apt install mysql-client
     sudo apt install libmysqlclient-dev
-
+    ```
 - 检验安装
 
+    ```
     sudo netstat -tap | grep mysql
+    ```
 
 - 允许mysql远程访问
 
-    sudo vim /etc/mysql/mysql.conf.d/mysqld.cnf
+   ```
+   sudo vim /etc/mysql/mysql.conf.d/mysqld.cnf
+   ```
 
 mysqld.cnf文件中，注释掉bind-address = 127.0.0.1本行，退出保存
 
 - 授权
 
+    ```
     grant all on *.* to root@'%' identified by 'your passward' with grant option;
     flush privileges;
+    ```
 
 - 重启mysql
 
+    ```
     service mysql restart
+    ```
 
 运行源代码
 
 - 安装node_modules
 
+    ```
     cd ./IoVProject
     npm install 
+    ```
 
 - 运行
 
+    ```
     cd ./IoVProject/bin
     node www.js
+    ```
 
 使用iPad访问Google Chrome（或其他浏览器）查看
 
@@ -75,11 +92,15 @@ mysqld.cnf文件中，注释掉bind-address = 127.0.0.1本行，退出保存
 
 - Installation
 
+    ```
     npm install -g truffle
+    ```
 
 - Start project
 
+    ```
     truffle init
+    ```
 
 Once this operation is completed, you'll now have a project structure with the following items:
 
@@ -90,20 +111,26 @@ Once this operation is completed, you'll now have a project structure with the f
 
 - Compile
 
+    ```
     truffle compile
+    ```
 
   Upon first run, all contracts will be compiled. Upon subsequent runs, Truffle will compile only the contracts that have been changed since the last compile. If you'd like to override this behavior, run the above command with the --alloption.
 
 - Migration
 
+    ```
     truffle migrate
     #truffle migrate --reset means 
+    ```
 
   This will run all migrations located within your project's migrations directory. At their simplest, migrations are simply a set of managed deployment scripts. If your migrations were previously run successfully, truffle migrate will start execution from the last migration that was ran, running only newly created migrations. If no new migrations exists, truffle migrate won't perform any action at all. You can use the --reset option to run all your migrations from the beginning.
 
 - Develop
 
+    ```
     truffle develop 
+    ```
 
   This will look for a network definition called development in the configuration, and connect to it, if available. You can override this using the --network <name> option
 
@@ -115,10 +142,9 @@ Once this operation is completed, you'll now have a project structure with the f
 
 - Installation
 
+    ```
     npm install ganache-cli
+    ```
 
-
-
-### Web3
 
 
