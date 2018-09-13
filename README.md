@@ -112,10 +112,12 @@ mysqld.cnf文件中，注释掉bind-address = 127.0.0.1本行，退出保存
 
 Once this operation is completed, you'll now have a project structure with the following items:
 
+    ```
     contracts/: Directory for Solidity contracts
     migrations/: Directory for scriptable deployment files
     test/: Directory for test files for testing your application and contracts
     truffle.js: Truffle configuration file
+    ```
 
 - Compile
 
@@ -141,6 +143,29 @@ Once this operation is completed, you'll now have a project structure with the f
     ```
 
   This will look for a network definition called development in the configuration, and connect to it, if available. You can override this using the --network <name> option
+   
+### truffle contract
+   Better Ethereum contract abstraction, for Node and the browser.
+- Install
+
+    ```
+    npm install truffle-contract
+    ```
+- Set up a new web3 provider instance and initialize your contract
+
+    ```
+    var provider = new Web3.providers.HttpProvider("http://localhost:8545");
+    var contract = require("truffle-contract");
+
+    var MyContract = contract({
+    abi: ...,
+    unlinked_binary: ...,
+    address: ..., // optional
+    // many more
+    })
+    MyContract.setProvider(provider);
+    ```
+   You now have access to the functions on your contract.
 
 ### ganache-cli
 
