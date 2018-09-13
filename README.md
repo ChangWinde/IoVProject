@@ -10,7 +10,7 @@
 - geth：lastest
 ## Installation
 ### geth
-- 安装
+- Install
 
    ```
    sudo apt-get install software-properties-common 
@@ -20,7 +20,7 @@
    ```
 ### Node
 
-- 安装
+- Install
 
     ```
     sudo apt-get install nodejs
@@ -35,35 +35,35 @@
 
 ### MySQL
 
-- 安装
+- Intall
 
     ```
     sudo apt-get install mysql-server
     sudo apt install mysql-client
     sudo apt install libmysqlclient-dev
     ```
-- 检验安装
+- Inspection installation
 
     ```
     sudo netstat -tap | grep mysql
     ```
 
-- 允许mysql远程访问
+- permit mysql remote access
 
    ```
    sudo vim /etc/mysql/mysql.conf.d/mysqld.cnf
    ```
 
-mysqld.cnf文件中，注释掉bind-address = 127.0.0.1本行，退出保存
+   In mysqld.cnf,comment the line of bind-address = 127.0.0.1, then save and quit.
 
-- 授权
+- Authorization
 
     ```
     grant all on *.* to root@'%' identified by 'your passward' with grant option;
     flush privileges;
     ```
 
-- 重启mysql
+- Restart mysql
 
     ```
     service mysql restart
@@ -71,21 +71,20 @@ mysqld.cnf文件中，注释掉bind-address = 127.0.0.1本行，退出保存
 
 ### 运行源代码
 
-- 安装node_modules
+- install node_modules dependencies
 
     ```
     cd ./IoVProject
     npm install 
     ```
 
-- 运行
+- run
 
     ```
     cd ./IoVProject/bin
     node www.js
     ```
-
-使用iPad访问Google Chrome（或其他浏览器）查看
+access our production on Google Chrome(or other brower) by iPad.
 
 
 ## Overview
