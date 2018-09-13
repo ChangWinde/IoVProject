@@ -12,6 +12,7 @@
 
 
 ## Installation
+  You can execute the setup.sh to help you install environment automatically.
 ### geth
 - Install
 
