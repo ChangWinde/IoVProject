@@ -26,7 +26,7 @@
     sudo apt-get install nodejs
     ```
 
-- 注意apt-get可能需要更新的问题
+- notice apt-get may meet some problem about update
 
     ```
     sudo apt-get update
