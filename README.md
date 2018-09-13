@@ -69,7 +69,7 @@
     service mysql restart
     ```
 
-### 运行源代码
+### Run Source Code
 
 - install node_modules dependencies
 
