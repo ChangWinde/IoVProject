@@ -96,7 +96,7 @@ mysqld.cnf文件中，注释掉bind-address = 127.0.0.1本行，退出保存
     NodeJS 5.0+ recommended.
     Windows, Linux or Mac OS X
 
-  Truffle also requires that you have a running Ethereum client which supports the standard JSON RPC API (which is nearly all of them). There are many to choose from, and some better than others for development. We'll discuss them in detail in the Choosing an Ethereum client section.
+   Truffle also requires that you have a running Ethereum client which supports the standard JSON RPC API (which is nearly all of them). There are many to choose from, and some better than others for development. We'll discuss them in detail in the Choosing an Ethereum client section.
 
 - Installation
 
@@ -110,7 +110,7 @@ mysqld.cnf文件中，注释掉bind-address = 127.0.0.1本行，退出保存
     truffle init
     ```
 
-Once this operation is completed, you'll now have a project structure with the following items:
+   Once this operation is completed, you'll now have a project structure with the following items:
 
     ```
     contracts/: Directory for Solidity contracts
@@ -145,6 +145,7 @@ Once this operation is completed, you'll now have a project structure with the f
   This will look for a network definition called development in the configuration, and connect to it, if available. You can override this using the --network <name> option
    
 ### truffle contract
+
    Better Ethereum contract abstraction, for Node and the browser.
 - Install
 
