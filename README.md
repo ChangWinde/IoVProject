@@ -3,11 +3,14 @@
 
 - Linux ubuntu 18.04 LST
 - Node：8.10.0
-- truffle: 4.1.14 
-- truffle-contact：3.0.6
-- express：~4.16.0
-- mysql：2.16.0
-- geth：lastest
+- Truffle: 4.1.14 
+- Truffle-contact：3.0.6
+- Express：~4.16.0
+- MySQL：2.16.0
+- Geth：1.8.14
+- Solidity：0.4.24 
+
+
 ## Installation
 ### geth
 - Install
